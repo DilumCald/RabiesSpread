@@ -1,0 +1,191 @@
+breed [dogs dog]
+breed [antidogs antidog]
+breed [population person]
+breed [waters water]
+population-own [age immunityTime diseaseTime]
+dogs-own [age ]
+antidogs-own [mage]
+
+to setup
+  ca
+  create-population numHealthyPeople [
+    setxy random-xcor random-ycor
+    set shape "person"
+    set color blue
+    set size 2.5
+  ]
+  create-dogs numdogs [
+    setxy random-xcor random-ycor
+    set shape "dog1"
+    set color red
+    set size 1.5
+  ]
+  create-antidogs numantidogs [
+    setxy random-xcor random-ycor
+    set shape "dog"
+    set color green
+    set size 1.5
+  ]
+  create-population numInfectedPeople [
+    setxy random-xcor random-ycor
+    set shape "person"
+    set color red
+    set age random maxAgeOfPeople
+    set size 2.5
+  ]
+  ask n-of hospitalsCount patches [set pcolor white ]
+  ask n-of dogsTrap patches [set pcolor yellow]
+  reset-ticks
+end
+
+to go
+  reset-ticks
+  tick
+  moveAllObjects
+  spreadRabies
+  admitHospitals
+  deathOfPopulation
+  deathOfdogs
+  deathOfAntidogs
+  createMoredogs
+  createMoreAntidogs
+  healSpontaneous
+  killdogs
+  killdogsTrap
+  endOfRabies
+end
+
+to moveAllObjects
+  ask population [
+    rt random 91 - 45 fd 1
+  ]
+  ask dogs [
+    rt random 91 - 45 fd .5
+  ]
+  ask antidogs [
+    rt random 91 - 45 fd .5
+  ]
+end
+
+to spreadRabies
+  ask population with [color = red]
+  [
+    ask population in-radius 1 with [color = blue][
+      if (random 100 < InfectionChance) [
+        if (immunityTime = 0) [set color red]
+      ]
+    ]
+  ]
+  ask dogs with [color = red]
+  [
+    ask population in-radius 1 with [color = blue][
+      if (random 100 < InfectionChance) [
+        if (immunityTime = 0) [set color red]
+      ]
+    ]
+  ]
+  ask population with [color = red]
+  [
+    ask dogs in-radius 1 with [color = blue][
+      set color red
+    ]
+  ]
+end
+
+to admitHospitals
+  ask population with [color = red and pcolor = white]
+  [
+    set color blue
+    set immunityTime immunityState
+    set diseaseTime 0
+  ]
+end
+
+to killdogsTrap
+  ask dogs with [color = red and pcolor = yellow]
+  [
+    die
+  ]
+end
+
+to deathOfPopulation
+  ask population with [color = red][
+    set age age + 1
+    if (random maxAgeOfPeople = 0) [die]
+  ]
+end
+
+to deathOfdogs
+  ask dogs with [color = red][
+    set age age + 1
+    if (random dogsMaxage = 0) [die]
+  ]
+end
+
+to deathOfAntidogs
+  ask antidogs with [color = green][
+    set mage mage + 1
+    if (random antidogsMaxAge = 0) [die]
+  ]
+end
+
+to createMoredogs
+  if random 100 < percentageOfdogsProduction [
+    create-dogs 1[
+      setxy random-xcor random-ycor
+      set shape "dog1"
+      set color red
+      set size 1.5
+    ]
+  ]
+end
+
+to createMoreAntidogs
+  if random 100 < percentageOfAntidogsProduction [
+    create-antidogs 1[
+      setxy random-xcor random-ycor
+      set shape "dog1"
+      set color green
+      set size 1.5
+    ]
+  ]
+end
+
+to healSpontaneous
+  ask population with [color = red][
+    if (random 100 < recoveryState) [
+      set color blue
+      set immunityTime immunityState
+      set diseaseTime 0
+    ]
+  ]
+  ask population with [immunityTime > 0][
+    set immunityTime (immunityTime - 1)
+  ]
+end
+
+to killdogs
+  ask antidogs[
+    ask dogs in-radius 2[
+      die
+    ]
+  ]
+end
+
+to endOfRabies
+  ask population with [color = red][
+    set diseaseTime (diseaseTime + 1)
+    if (diseaseTime > diseaseDuration)
+    [
+      ifelse (random 100 < mortalityofPeople)
+      [
+        die
+      ]
+      [
+        set color blue
+        set immunityTime immunityState
+        set diseaseTime 0
+      ]
+    ]
+  ]
+end
