@@ -19,9 +19,8 @@ Influence: The actions and attitudes of agents can influence the behavior and op
 
 This project aims to:
 
-Analyze the emergence of social dynamics and group formations within the simulated population.
-Investigate how individual characteristics and biases impact interaction patterns.
-Explore the potential consequences of different social norms and interventions.
+To show the How will the model simulate the transmission of rabies between agents
+
 
 Running the Model:
 
