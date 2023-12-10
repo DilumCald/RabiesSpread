@@ -31,7 +31,7 @@ Open the model file in NetLogo.
 Set the desired simulation parameters.
 Run the simulation and observe the results.
 
-Model Documentation:The project includes detailed documentation in the Documentation folder, including:
+Model Documentation:The project includes detailed documentation in the Documentation folder
 
 Disclaimer:This model is a simplified representation of complex social dynamics. The results of the simulation should not be interpreted as definitive or conclusive.
 
